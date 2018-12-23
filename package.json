@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "redis": "^2.8.0"
+  },
+  "deprecated": false,
+  "description": "Use Redis as storage for Dashboard",
+  "engine": {
+    "node": "8.1.14",
+    "npm": "5.0.3"
+  },
+  "license": "SPDX(MIT OR Unlicense)",
+  "main": "index.js",
+  "name": "@userappstore/storage-redis",
+  "repository": {
+    "type": "git",
+    "url": "git://gitlab.com/userappstore/storage-redis.git"
+  },
+  "version": "1.0.0"
+}
