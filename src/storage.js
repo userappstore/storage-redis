@@ -15,6 +15,7 @@ module.exports = {
   client,
   exists: util.promisify(exists),
   read: util.promisify(read),
+  readMany: util.promisify(readMany),
   readImage: util.promisify(readImage),
   write: util.promisify(write),
   writeImage: util.promisify(writeImage),
@@ -66,6 +67,22 @@ function read(file, callback) {
     throw new Error('invalid-file')
   }
   return client.get(file, callback)
+}
+
+function readMany(files, callback) {
+  if (!files || !files.length) {
+    throw new Error('invalid-files')
+  }
+  const data = {}
+  return client.hmget(files, (error, array) => {
+    if (error) {
+      return callback (error)
+    }
+    for (const i in files) {
+      data[files[i]] = array[i]
+    }
+    return callback(null, data)
+  })
 }
 
 function readImage(file, callback) {
