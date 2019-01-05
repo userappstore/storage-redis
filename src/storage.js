@@ -3,7 +3,9 @@ const util = require('util')
 
 let client = Redis.createClient(global.redisURL)
 client.on('error', (error) => {
-  console.log(error)
+  if (process.env.DEBUG_ERRORS) {
+    console.log('redis.storage', error)
+  }
   process.exit(1)
 })
 
