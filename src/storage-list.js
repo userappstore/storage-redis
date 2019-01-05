@@ -11,7 +11,7 @@ module.exports = {
 }
 
 function exists(path, itemid, callback) {
-  return Storage.client.hexists(`map/${path}`, itemid, (error, index) => {
+  return Storage.client.hexists(`list/${path}`, itemid, (error, index) => {
     return callback(error, index === 1)
   })
 }
@@ -24,7 +24,7 @@ function add(path, itemid, callback) {
     if (existing) {
       return callback()
     }
-    return Storage.client.hset(`map/${path}`, itemid, '1', (error) => {
+    return Storage.client.hset(`list/${path}`, itemid, '1', (error) => {
       if (error) {
         return callback(error)
       }
