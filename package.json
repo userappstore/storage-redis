@@ -13,7 +13,7 @@
   "name": "@userappstore/storage-redis",
   "repository": {
     "type": "git",
-    "url": "git://gitlab.com/userappstore/storage-redis.git"
+    "url": "git://github.com/userappstore/storage-redis.git"
   },
   "version": "1.0.0"
 }
