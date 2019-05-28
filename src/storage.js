@@ -71,14 +71,18 @@ function read(file, callback) {
   return client.get(file, callback)
 }
 
-function readMany(files, callback) {
+function readMany(path, files, callback) {
   if (!files || !files.length) {
     throw new Error('invalid-files')
   }
+  const fullPaths = []
+  for (const file of files) {
+    fullPaths.push(`${path}/${file}`)
+  }
   const data = {}
-  return client.hmget(files, (error, array) => {
+  return client.mget(fullPaths, (error, array) => {
     if (error) {
-      return callback (error)
+      return callback(error)
     }
     for (const i in files) {
       data[files[i]] = array[i]
