@@ -10,10 +10,10 @@
   },
   "license": "SPDX(MIT OR Unlicense)",
   "main": "index.js",
-  "name": "@userappstore/storage-redis",
+  "name": "@userdashboard/storage-redis",
   "repository": {
     "type": "git",
-    "url": "git://github.com/userappstore/storage-redis.git"
+    "url": "git://github.com/userdashboard/storage-redis.git"
   },
-  "version": "1.1.0"
+  "version": "1.0.0"
 }
