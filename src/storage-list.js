@@ -49,9 +49,6 @@ function list(path, offset, pageSize, callback) {
   if (offset < 0) {
     throw new Error('invalid-offset')
   }
-  if (offset && offset >= pageSize) {
-    throw new Error('invalid-offset')
-  }
   return Storage.client.lrange(path, offset, offset + pageSize - 1, callback)
 }
 
