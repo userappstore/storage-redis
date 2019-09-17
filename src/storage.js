@@ -34,7 +34,7 @@ function exists (path, callback) {
   return client.exists(path, callback)
 }
 
-function deleteFile(path, callback) {
+function deleteFile (path, callback) {
   if (!path) {
     throw new Error('invalid-file')
   }
@@ -44,7 +44,7 @@ function deleteFile(path, callback) {
   return client.del(path, callback)
 }
 
-function write(file, contents, callback) {
+function write (file, contents, callback) {
   if (!file) {
     throw new Error('invalid-file')
   }
@@ -54,24 +54,24 @@ function write(file, contents, callback) {
   return client.set(file, contents, callback)
 }
 
-function writeImage(file, buffer, callback) {
+function writeImage (file, buffer, callback) {
   if (!file) {
     throw new Error('invalid-file')
   }
   if (!buffer || !buffer.length) {
     throw new Error('invalid-buffer')
-  } 
+  }
   return client.set(file, buffer, callback)
 }
 
-function read(file, callback) {
+function read (file, callback) {
   if (!file) {
     throw new Error('invalid-file')
   }
   return client.get(file, callback)
 }
 
-function readMany(path, files, callback) {
+function readMany (path, files, callback) {
   if (!files || !files.length) {
     throw new Error('invalid-files')
   }
@@ -91,7 +91,7 @@ function readMany(path, files, callback) {
   })
 }
 
-function readImage(file, callback) {
+function readImage (file, callback) {
   if (!file) {
     throw new Error('invalid-file')
   }

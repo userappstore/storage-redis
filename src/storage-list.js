@@ -10,13 +10,13 @@ module.exports = {
   remove
 }
 
-function exists(path, itemid, callback) {
+function exists (path, itemid, callback) {
   return Storage.client.hexists(`list/${path}`, itemid, (error, index) => {
     return callback(error, index === 1)
   })
 }
 
-function add(path, itemid, callback) {
+function add (path, itemid, callback) {
   return exists(path, itemid, (error, existing) => {
     if (error) {
       return callback(error)
@@ -33,15 +33,15 @@ function add(path, itemid, callback) {
   })
 }
 
-function count(path, callback) {
+function count (path, callback) {
   return Storage.client.llen(path, callback)
 }
 
-function listAll(path, callback) {
+function listAll (path, callback) {
   return Storage.client.lrange(path, 0, -1, callback)
 }
 
-function list(path, offset, pageSize, callback) {
+function list (path, offset, pageSize, callback) {
   offset = offset || 0
   if (pageSize === null || pageSize === undefined) {
     pageSize = global.pageSize
@@ -52,6 +52,6 @@ function list(path, offset, pageSize, callback) {
   return Storage.client.lrange(path, offset, offset + pageSize - 1, callback)
 }
 
-function remove(path, itemid, callback) {
+function remove (path, itemid, callback) {
   return Storage.client.lrem(path, 1, itemid, callback)
 }

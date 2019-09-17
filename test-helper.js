@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 const storage = require('./src/storage.js')
 
 beforeEach((callback) => {
