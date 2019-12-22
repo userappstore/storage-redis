@@ -2,8 +2,8 @@ const Redis = require('redis')
 const util = require('util')
 
 let client
-if (process.env.REDIS_HOST && process.env.REDIS_PORT) {
-  client = Redis.createClient(process.env.REDIS_HOST, process.env.REDIS_PORT)
+if (process.env.REDIS_PORT && process.env.REDIS_HOST) {
+  client = Redis.createClient(process.env.REDIS_PORT, process.env.REDIS_HOST)
 } else {
   client = Redis.createClient(process.env.REDIS_URL || 'redis://localhost:6379')
 }
