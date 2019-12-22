@@ -1,7 +1,12 @@
 const Redis = require('redis')
 const util = require('util')
 
-let client = Redis.createClient(process.env.REDIS_URL || 'redis://localhost:6379')
+let client
+if (process.env.REDIS_HOST && process.env.REDIS_PORT) {
+  client = Redis.createClient(process.env.REDIS_HOST, process.env.REDIS_PORT)
+} else {
+  client = Redis.createClient(process.env.REDIS_URL || 'redis://localhost:6379')
+}
 client.on('error', (error) => {
   if (process.env.DEBUG_ERRORS) {
     console.log('redis.storage', error)
