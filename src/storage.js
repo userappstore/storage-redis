@@ -29,6 +29,16 @@ module.exports = {
   deleteFile: util.promisify(deleteFile)
 }
 
+if (process.env.NODE_ENV === 'testing') {
+  const flushAll = util.promisify((callback) => {
+    client.flushall(callback)
+  })
+  module.exports.flush = async () => {
+    const flushAllAsync = util.promisify(flushAll)
+    await flushAllAsync()
+  }
+}
+
 function exists (path, callback) {
   if (!path) {
     throw new Error('invalid-file')
