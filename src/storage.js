@@ -41,7 +41,7 @@ module.exports = {
 
 if (process.env.NODE_ENV === 'testing') {
   const flushAll = util.promisify((callback) => {
-    client.flushall(callback)
+    client.flushdb(callback)
   })
   module.exports.flush = async () => {
     const flushAllAsync = util.promisify(flushAll)
