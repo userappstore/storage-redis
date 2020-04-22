@@ -7,6 +7,16 @@ if (process.env.REDIS_PORT && process.env.REDIS_HOST) {
 } else {
   client = Redis.createClient(process.env.REDIS_URL || 'redis://localhost:6379')
 }
+if (process.env.REDIS_URL) {
+  let db = process.env.REDIS_URL.split('/').pop()
+  if (db.length && db.length < 3) {
+    try {
+      db = parseInt(db)
+      client.select(db)
+    } catch (error) {
+    }
+  }
+}
 client.on('error', (error) => {
   if (process.env.DEBUG_ERRORS) {
     console.log('redis.storage', error)
