@@ -19,7 +19,7 @@ jobs:
         sudo apt-get install -y redis-server
         git clone https://github.com/userdashboard/dashboard.git dashboard
         cd dashboard
-        npm install mocha puppeteer@2.1.1 --no-save
+        npm install redis mocha puppeteer@2.1.1 --no-save
         mkdir -p node_modules/@userdashboard/storage-redis
         cp ../index.js node_modules/@userdashboard/storage-redis
         cp -R ../src node_modules/@userdashboard/storage-redis
