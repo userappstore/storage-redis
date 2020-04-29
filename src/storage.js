@@ -44,29 +44,22 @@ if (process.env.NODE_ENV === 'testing') {
     client.flushdb(callback)
   })
   module.exports.flush = async () => {
-    const flushAllAsync = util.promisify(flushAll)
-    await flushAllAsync()
+    await flushAll()
   }
 }
 
-function exists (path, callback) {
-  if (!path) {
+function exists (file, callback) {
+  if (!file) {
     throw new Error('invalid-file')
   }
-  if (path.indexOf('/') === path.length - 1) {
-    throw new Error('invalid-file')
-  }
-  return client.exists(path, callback)
+  return client.exists(file, callback)
 }
 
-function deleteFile (path, callback) {
-  if (!path) {
+function deleteFile (file, callback) {
+  if (!file) {
     throw new Error('invalid-file')
   }
-  if (path.indexOf('/') === path.length - 1) {
-    throw new Error('invalid-file')
-  }
-  return client.del(path, callback)
+  return client.del(file, callback)
 }
 
 function write (file, contents, callback) {
