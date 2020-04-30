@@ -1,4 +1,5 @@
 # Redis Storage for Dashboard
+![Test suite status](https://github.com/userdashboard/storage-redis/workflows/test-and-publish/badge.svg?branch=master)
 
 Install this module to use [Redis](https://redis.io) for data storage.
 
