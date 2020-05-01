@@ -10,13 +10,12 @@ jobs:
         node-version: [12.x]
     steps:
     - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
     - name: Setup Redis
       run: sudo apt-get install -y redis-server
-    - name: Setup dependencies
+    - name: Install dependencies
       run: |
         git clone https://github.com/userdashboard/dashboard.git /tmp/instance
         cd /tmp/instance
@@ -26,7 +25,7 @@ jobs:
         mkdir -p /tmp/instance/node_modules/@userdashboard/storage-redis
         cp index.js /tmp/instance/node_modules/@userdashboard/storage-redis
         cp -R src /tmp/instance/node_modules/@userdashboard/storage-redis
-    - name: Test without encryption
+    - name: Test unencrypted Redis storage
       run: cd /tmp/instance && npm test
       env:
         NODE_ENV: "testing"
@@ -37,7 +36,7 @@ jobs:
         REDIS_URL: "redis://localhost:6379/1"
         GENERATE_SITEMAP_TXT: "false"
         GENERATE_API_TXT: "false"
-    - name: Test with encryption
+    - name: Test encrypted Redis storage
       run: cd /tmp/instance && npm test
       env:
         NODE_ENV: "testing"
