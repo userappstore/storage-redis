@@ -1,117 +1,109 @@
 const Redis = require('redis')
 const util = require('util')
 
-let client
-if (process.env.REDIS_PORT && process.env.REDIS_HOST) {
-  client = Redis.createClient(process.env.REDIS_PORT, process.env.REDIS_HOST)
-} else {
-  client = Redis.createClient(process.env.REDIS_URL || 'redis://localhost:6379')
-}
-if (process.env.REDIS_URL) {
-  let db = process.env.REDIS_URL.split('/').pop()
-  if (db.length && db.length < 3) {
-    try {
-      db = parseInt(db)
-      client.select(db)
-    } catch (error) {
-    }
-  }
-}
-client.on('error', (error) => {
-  if (process.env.DEBUG_ERRORS) {
-    console.log('redis.storage', error)
-  }
-  process.exit(1)
-})
-
-client.on('end', () => {
-  client = null
-})
-
 module.exports = {
-  client,
-  exists: util.promisify(exists),
-  read: util.promisify(read),
-  readMany: util.promisify(readMany),
-  readImage: util.promisify(readImage),
-  write: util.promisify(write),
-  writeImage: util.promisify(writeImage),
-  deleteFile: util.promisify(deleteFile)
-}
-
-if (process.env.NODE_ENV === 'testing') {
-  const flushAll = util.promisify((callback) => {
-    client.flushdb(callback)
-  })
-  module.exports.flush = async () => {
-    await flushAll()
-  }
-}
-
-function exists (file, callback) {
-  if (!file) {
-    throw new Error('invalid-file')
-  }
-  return client.exists(file, callback)
-}
-
-function deleteFile (file, callback) {
-  if (!file) {
-    throw new Error('invalid-file')
-  }
-  return client.del(file, callback)
-}
-
-function write (file, contents, callback) {
-  if (!file) {
-    throw new Error('invalid-file')
-  }
-  if (!contents && contents !== '') {
-    throw new Error('invalid-contents')
-  }
-  return client.set(file, contents, callback)
-}
-
-function writeImage (file, buffer, callback) {
-  if (!file) {
-    throw new Error('invalid-file')
-  }
-  if (!buffer || !buffer.length) {
-    throw new Error('invalid-buffer')
-  }
-  return client.set(file, buffer, callback)
-}
-
-function read (file, callback) {
-  if (!file) {
-    throw new Error('invalid-file')
-  }
-  return client.get(file, callback)
-}
-
-function readMany (path, files, callback) {
-  if (!files || !files.length) {
-    throw new Error('invalid-files')
-  }
-  const fullPaths = []
-  for (const file of files) {
-    fullPaths.push(`${path}/${file}`)
-  }
-  const data = {}
-  return client.mget(fullPaths, (error, array) => {
-    if (error) {
-      return callback(error)
+  setup: async (moduleName) => {
+    const redisHost = process.env[`${moduleName}_REDIS_HOST`] || process.env.REDIS_HOST
+    const redisPort = process.env[`${moduleName}_REDIS_PORT`] || process.env.REDIS_PORT
+    const redisURL = process.env[`${moduleName}_REDIS_URL`] || process.env.REDIS_URL || 'redis://localhost:6379'
+    let client
+    if (redisHost && redisPort) {
+      client = Redis.createClient(redisPort, redisHost)
+    } else {
+      client = Redis.createClient(redisURL)
     }
-    for (const i in files) {
-      data[files[i]] = array[i]
+    if (redisURL) {
+      let db = redisURL.split('/').pop()
+      if (db.length && db.length < 3) {
+        try {
+          db = parseInt(db)
+          client.select(db)
+        } catch (error) {
+        }
+      }
     }
-    return callback(null, data)
-  })
-}
-
-function readImage (file, callback) {
-  if (!file) {
-    throw new Error('invalid-file')
+    client.on('error', (error) => {
+      if (process.env.DEBUG_ERRORS) {
+        console.log('redis.storage', error)
+      }
+      process.exit(1)
+    })
+    client.on('end', () => {
+      client = null
+    })
+    const container = {
+      client,
+      exists: util.promisify((file, callback) => {
+        if (!file) {
+          throw new Error('invalid-file')
+        }
+        return client.exists(file, callback)
+      }
+      ),
+      read: util.promisify((file, callback) => {
+        if (!file) {
+          throw new Error('invalid-file')
+        }
+        return client.get(file, callback)
+      }),
+      readMany: util.promisify((path, files, callback) => {
+        if (!files || !files.length) {
+          throw new Error('invalid-files')
+        }
+        const fullPaths = []
+        for (const file of files) {
+          fullPaths.push(`${path}/${file}`)
+        }
+        const data = {}
+        return client.mget(fullPaths, (error, array) => {
+          if (error) {
+            return callback(error)
+          }
+          for (const i in files) {
+            data[files[i]] = array[i]
+          }
+          return callback(null, data)
+        })
+      }),
+      readBinary: util.promisify((file, callback) => {
+        if (!file) {
+          throw new Error('invalid-file')
+        }
+        return client.get(file, callback)
+      }),
+      write: util.promisify((file, contents, callback) => {
+        if (!file) {
+          throw new Error('invalid-file')
+        }
+        if (!contents && contents !== '') {
+          throw new Error('invalid-contents')
+        }
+        return client.set(file, contents, callback)
+      }),
+      writeBinary: util.promisify((file, buffer, callback) => {
+        if (!file) {
+          throw new Error('invalid-file')
+        }
+        if (!buffer || !buffer.length) {
+          throw new Error('invalid-buffer')
+        }
+        return client.set(file, buffer, callback)
+      }),
+      delete: util.promisify((file, callback) => {
+        if (!file) {
+          throw new Error('invalid-file')
+        }
+        return client.del(file, callback)
+      })
+    }
+    if (process.env.NODE_ENV === 'testing') {
+      const flushAll = util.promisify((callback) => {
+        client.flushdb(callback)
+      })
+      container.flush = async () => {
+        await flushAll()
+      }
+    }
+    return container
   }
-  return client.get(file, callback)
 }

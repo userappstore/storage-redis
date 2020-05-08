@@ -5,14 +5,20 @@ Install this module to use [Redis](https://redis.io) for data storage.
 
 You will need to launch with additional configuration variables:
 
-    STORAGE_ENGINE=@userdashboard/storage-redis
+    STORAGE=@userdashboard/storage-redis
     REDIS_URL=redis://localhost:6379
   
 Alternatively configure connection as:
 
-    STORAGE_ENGINE=@userdashboard/storage-redis
+    STORAGE=@userdashboard/storage-redis
     REDIS_HOST=redis
     REDIS_PORT=12345
+
+You can use this storage for a module:
+
+    MODULE_NAME_STORAGE=@userdashboard/storage-redis
+    MODULE_NAME_REDIS_HOST=redis
+    MODULE_NAME_REDIS_PORT=12345
 
 To test this module use [Dashboard](https://github.com/userdashboard/dashboard)'s test suite configured with this storage engine.
 
