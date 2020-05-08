@@ -4,10 +4,11 @@ module.exports = {
   setup: async (storage) => {
     const container = {
       add: util.promisify((path, itemid, callback) => {
-        return storage.exists(path, itemid, (error, existing) => {
+        return storage.client.hexists(`list/${path}`, itemid, (error, index) => {
           if (error) {
             return callback(error)
           }
+          const existing = index === 1
           if (existing) {
             return callback()
           }
