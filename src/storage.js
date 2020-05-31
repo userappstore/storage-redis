@@ -1,4 +1,3 @@
-const Log = require('@userdashboard/dashboard/src/log.js')('storage-redis')
 const Redis = require('redis')
 const util = require('util')
 
@@ -24,8 +23,7 @@ module.exports = {
       }
     }
     client.on('error', (error) => {
-      Log.error('redis storage error', error)
-      process.exit(1)
+      throw error
     })
     client.on('end', () => {
       client = null
