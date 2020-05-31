@@ -1,4 +1,4 @@
-const Log = require('@userdashboard/src/log.js')('storage-redis')
+const Log = require('@userdashboard/dashboard/src/log.js')('storage-redis')
 const Redis = require('redis')
 const util = require('util')
 
