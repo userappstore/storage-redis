@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const Redis = require('redis')
 const util = require('util')
 
@@ -6,6 +8,14 @@ module.exports = {
     const redisHost = process.env[`${moduleName}_REDIS_HOST`] || process.env.REDIS_HOST
     const redisPort = process.env[`${moduleName}_REDIS_PORT`] || process.env.REDIS_PORT
     const redisURL = process.env[`${moduleName}_REDIS_URL`] || process.env.REDIS_URL || 'redis://localhost:6379'
+    const dashboardPath1 = path.join(global.applicationPath, 'node_modules/@userdashboard/dashboard/src/log.js')
+    let Log
+    if (fs.existsSync(dashboardPath1)) {
+      Log = require(dashboardPath1)('redis')
+    } else {
+      const dashboardPath2 = path.join(global.applicationPath, 'src/log.js')
+      Log = require(dashboardPath2)('redis')
+    }
     let client
     if (redisHost && redisPort) {
       client = Redis.createClient(redisPort, redisHost)
@@ -32,6 +42,7 @@ module.exports = {
       client,
       exists: util.promisify((file, callback) => {
         if (!file) {
+          Log.error('invalid file', file)
           throw new Error('invalid-file')
         }
         return client.exists(file, callback)
@@ -39,12 +50,14 @@ module.exports = {
       ),
       read: util.promisify((file, callback) => {
         if (!file) {
+          Log.error('invalid file', file)
           throw new Error('invalid-file')
         }
         return client.get(file, callback)
       }),
       readMany: util.promisify((path, files, callback) => {
         if (!files || !files.length) {
+          Log.error('invalid files', files)
           throw new Error('invalid-files')
         }
         const fullPaths = []
@@ -54,7 +67,8 @@ module.exports = {
         const data = {}
         return client.mget(fullPaths, (error, array) => {
           if (error) {
-            return callback(error)
+            Log.error('error reading many', error)
+            return callback(new Error('unknown-error'))
           }
           for (const i in files) {
             data[files[i]] = array[i]
@@ -64,12 +78,14 @@ module.exports = {
       }),
       readBinary: util.promisify((file, callback) => {
         if (!file) {
+          Log.error('invalid file', file)
           throw new Error('invalid-file')
         }
         return client.get(file, callback)
       }),
       write: util.promisify((file, contents, callback) => {
         if (!file) {
+          Log.error('invalid file', file)
           throw new Error('invalid-file')
         }
         if (!contents && contents !== '') {
@@ -79,15 +95,18 @@ module.exports = {
       }),
       writeBinary: util.promisify((file, buffer, callback) => {
         if (!file) {
+          Log.error('invalid file', file)
           throw new Error('invalid-file')
         }
         if (!buffer || !buffer.length) {
+          Log.error('invalid buffer', buffer)
           throw new Error('invalid-buffer')
         }
         return client.set(file, buffer, callback)
       }),
       delete: util.promisify((file, callback) => {
         if (!file) {
+          Log.error('invalid file')
           throw new Error('invalid-file')
         }
         return client.del(file, callback)
