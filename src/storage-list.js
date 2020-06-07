@@ -19,7 +19,13 @@ module.exports = {
             Log.error('error adding item', error)
             return callback(error)
           }
-          return storage.client.lpush(path, itemid, callback)
+          return storage.client.lpush(path, itemid, (error) => {
+            if (error) {
+              Log.error('error adding item', error)
+              return callback(error)
+            }
+            return callback()
+          })
         })
       }),
       addMany: util.promisify((items, callback) => {
@@ -32,21 +38,27 @@ module.exports = {
           const itemid = items[path]
           return storage.client.hsetnx(`list/${path}`, itemid, '1', (error) => {
             if (error) {
-              Log.error('error adding many items', error)
-              return callback(new Error('unknown-error'))
+              Log.error('error adding item', error)
+              return callback(error)
             }
-            return storage.client.lpush(path, itemid, callback)
+            return storage.client.lpush(path, itemid, (error) => {
+              if (error) {
+                Log.error('error adding many items', error)
+                return callback(new Error('unknown-error'))
+              }
+              return nextItem()
+            })
           })
         }
         return nextItem()
       }),
       count: util.promisify((path, callback) => {
-        return storage.client.llen(path, (error) => {
+        return storage.client.llen(path, (error, result) => {
           if (error) {
             Log.error('error adding item', error)
             return callback(new Error('unknown-error'))
           }
-          return callback()
+          return callback(null, result)
         })
       }),
       exists: util.promisify((path, itemid, callback) => {
@@ -66,21 +78,27 @@ module.exports = {
         if (offset < 0) {
           throw new Error('invalid-offset')
         }
-        return storage.client.lrange(path, offset, offset + pageSize - 1, callback)
-      }),
-      listAll: util.promisify((path, callback) => {
-        return storage.client.lrange(path, 0, -1, (error) => {
+        return storage.client.lrange(path, offset, offset + pageSize - 1, (error, results) => {
           if (error) {
-            Log.error('error adding many items', error)
+            Log.error('error listing', error)
             return callback(new Error('unknown-error'))
           }
-          return callback()
+          return callback(null, results)
+        })
+      }),
+      listAll: util.promisify((path, callback) => {
+        return storage.client.lrange(path, 0, -1, (error, results) => {
+          if (error) {
+            Log.error('error listing all', error)
+            return callback(new Error('unknown-error'))
+          }
+          return callback(null, results)
         })
       }),
       remove: util.promisify((path, itemid, callback) => {
         return storage.client.lrem(path, 1, itemid, (error) => {
           if (error) {
-            Log.error('error adding many items', error)
+            Log.error('error removing', error)
             return callback(new Error('unknown-error'))
           }
           return callback()
