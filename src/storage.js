@@ -4,7 +4,11 @@ const Redis = require('redis')
 const util = require('util')
 
 module.exports = {
-  setup: async (moduleName) => {
+  setup: util.promisify((moduleName, callback) => {
+    if (!callback) {
+      callback = moduleName
+      moduleName = null
+    }
     const redisHost = process.env[`${moduleName}_REDIS_HOST`] || process.env.REDIS_HOST
     const redisPort = process.env[`${moduleName}_REDIS_PORT`] || process.env.REDIS_PORT
     const redisURL = process.env[`${moduleName}_REDIS_URL`] || process.env.REDIS_URL || 'redis://localhost:6379'
@@ -45,15 +49,26 @@ module.exports = {
           Log.error('invalid file', file)
           throw new Error('invalid-file')
         }
-        return client.exists(file, callback)
-      }
-      ),
+        return client.exists(file, (error, result) => {
+          if (error) {
+            Log.error('error checking exists', error)
+            return callback(new Error('unknown-error'))
+          }
+          return callback(null, result)
+        })
+      }),
       read: util.promisify((file, callback) => {
         if (!file) {
           Log.error('invalid file', file)
           throw new Error('invalid-file')
         }
-        return client.get(file, callback)
+        return client.get(file, (error, result) => {
+          if (error) {
+            Log.error('error reading', error)
+            return callback(new Error('unknown-error'))
+          }
+          return callback(null, result)
+        })
       }),
       readMany: util.promisify((path, files, callback) => {
         if (!files || !files.length) {
@@ -81,7 +96,13 @@ module.exports = {
           Log.error('invalid file', file)
           throw new Error('invalid-file')
         }
-        return client.get(file, callback)
+        return client.get(file, (error, result) => {
+          if (error) {
+            Log.error('error reading binary', error)
+            return callback(new Error('unknown-error'))
+          }
+          return callback(null, result)
+        })
       }),
       write: util.promisify((file, contents, callback) => {
         if (!file) {
@@ -91,7 +112,13 @@ module.exports = {
         if (!contents && contents !== '') {
           throw new Error('invalid-contents')
         }
-        return client.set(file, contents, callback)
+        return client.set(file, contents, (error, result) => {
+          if (error) {
+            Log.error('error writing', error)
+            return callback(new Error('unknown-error'))
+          }
+          return callback(null, result)
+        })
       }),
       writeBinary: util.promisify((file, buffer, callback) => {
         if (!file) {
@@ -102,14 +129,26 @@ module.exports = {
           Log.error('invalid buffer', buffer)
           throw new Error('invalid-buffer')
         }
-        return client.set(file, buffer, callback)
+        return client.set(file, buffer, (error, result) => {
+          if (error) {
+            Log.error('error writing binary', error)
+            return callback(new Error('unknown-error'))
+          }
+          return callback(null, result)
+        })
       }),
       delete: util.promisify((file, callback) => {
         if (!file) {
           Log.error('invalid file')
           throw new Error('invalid-file')
         }
-        return client.del(file, callback)
+        return client.del(file, (error, result) => {
+          if (error) {
+            Log.error('error deleting', error)
+            return callback(new Error('unknown-error'))
+          }
+          return callback(null, result)
+        })
       })
     }
     if (process.env.NODE_ENV === 'testing') {
@@ -117,6 +156,6 @@ module.exports = {
         client.flushdb(callback)
       })
     }
-    return container
-  }
+    return callback(null, container)
+  })
 }
