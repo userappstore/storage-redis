@@ -14,7 +14,7 @@ module.exports = {
     }
     const container = {
       add: util.promisify((path, itemid, callback) => {
-        return storage.client.hsetnx(`list/${path}`, itemid, '1', (error) => {
+        return storage.client.hsetnx(`list/map/${path}`, itemid, '1', (error) => {
           if (error) {
             Log.error('error adding item', error)
             return callback(error)
