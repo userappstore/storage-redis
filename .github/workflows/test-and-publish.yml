@@ -35,7 +35,7 @@ jobs:
         FAST_START: true
         DASHBOARD_SERVER: "http://localhost:9000"
         DOMAIN: "localhost"
-        STORAGE: "@userdashboard/storage-cache-redis"
+        STORAGE: "@userdashboard/storage-redis"
         REDIS_URL: "redis://localhost:6379/15"
         GENERATE_SITEMAP_TXT: false
         GENERATE_API_TXT: false
