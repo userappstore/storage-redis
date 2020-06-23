@@ -23,7 +23,7 @@ jobs:
         mkdir -p node_modules/@userdashboard/storage-redis
         rm -rf node_modules/@userdashboard/storage-redis/src
         cp *.js node_modules/@userdashboard/storage-redis
-        cp -R src/ node_modules/@userdashboard/storage-che-redis/src/
+        cp -R src/ node_modules/@userdashboard/storage-redis/src/
     - name: Lint (standard.js)
       run: standard src
     - name: Increase NPM version
