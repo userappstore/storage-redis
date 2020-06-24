@@ -53,7 +53,7 @@ jobs:
         STORAGE: "@userdashboard/storage-redis"
         REDIS_URL: "redis://localhost:6379"
         ORGANIZATIONS_STORAGE: "@userdashboard/storage-mongodb"
-        ORGANIZATIONS_ MONGODB_URL: "mongodb://localhost:27017"
+        ORGANIZATIONS_MONGODB_URL: "mongodb://localhost:27017"
         GENERATE_SITEMAP_TXT: false
         GENERATE_API_TXT: false
         LOG_LEVEL: "info,warn,error,log"
