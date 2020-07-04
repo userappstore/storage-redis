@@ -16,7 +16,7 @@ jobs:
     - uses: zhulik/redis-action@1.1.0
       with:
         redis version: '5'
-        number of databases: 1
+        number of databases: 2
     - name: Install dependencies
       run: |
         sudo apt-get install -y mongodb
