@@ -64,7 +64,7 @@ jobs:
           npm install standard -g
         fi        
         standard
-    - name: Test as shared storage
+    - name: Test as only storage for Dashboard and modules
       run: |
         ./node_modules/.bin/mocha --file main.js --bail --exit --full-trace --recursive --timeout 90000000 "./node_modules/@userdashboard/**/{,!(public)}/*.test.js" | tee tests.txt
         TESTS=`cat tests.txt`
@@ -76,7 +76,7 @@ jobs:
         NODE_ENV: testing
         STORAGE: "@userdashboard/storage-redis"
         REDIS_URL: "redis://localhost:6379"
-    - name: Test as only storage
+    - name: Test as Dashboard storage with module on other type
       run: |
         ./node_modules/.bin/mocha --file main.js --bail --exit --full-trace --recursive --timeout 90000000 "./node_modules/@userdashboard/**/{,!(public)}/*.test.js" | tee tests.txt
         TESTS=`cat tests.txt`
@@ -90,7 +90,7 @@ jobs:
         REDIS_URL: "redis://localhost:6379"
         ORGANIZATIONS_STORAGE: "@userdashboard/storage-mongodb"
         ORGANIZATIONS_MONGODB_URL: "mongodb://localhost:27017"
-    - name: Test as module storage
+    - name: Test as module storage with Dashboard on other type
       run: |
         ./node_modules/.bin/mocha --file main.js --bail --exit --full-trace --recursive --timeout 90000000 "./node_modules/@userdashboard/**/{,!(public)}/*.test.js" | tee tests.txt
         TESTS=`cat tests.txt`
@@ -104,7 +104,7 @@ jobs:
         MONGODB_URL: "mongodb://localhost:27017"
         ORGANIZATIONS_STORAGE: "@userdashboard/storage-redis"
         ORGANIZATIONS_REDIS_URL: "redis://localhost:6379"
-    - name: Test as primary and separately as module storage
+    - name: Test as Dashboard and module storage using separate servers
       run: |
         ./node_modules/.bin/mocha --file main.js --bail --exit --full-trace --recursive --timeout 90000000 "./node_modules/@userdashboard/**/{,!(public)}/*.test.js" | tee tests.txt
         TESTS=`cat tests.txt`
