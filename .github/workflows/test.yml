@@ -1,10 +1,11 @@
-name: tset
+name: test
 
 on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -12,7 +13,7 @@ jobs:
         node-version: 14
     - uses: zhulik/redis-action@1.1.0
       with:
-        redis version: '5'
+        redis version: 5
         number of databases: 2
     - uses: supercharge/mongodb-github-action@1.3.0
       with:
@@ -39,9 +40,10 @@ jobs:
         npm init -y
         npm install "$HERE" @userdashboard/dashboard @userdashboard/organizations @userdashboard/storage-mongodb mocha faker puppeteer
         PACKAGE=`cat package.json`
-        PACKAGE=${PACKAGE/\"deprecated\"\: false/\"dashboard\": \{ \"modules\"\: \[\"@userdashboard/organizations\"\] \}}
+        PACKAGE=${PACKAGE/\"author\"\: \"\"/\"dashboard\": \{ \"modules\"\: \[\"@userdashboard/organizations\"\] \}}
         echo $PACKAGE > package.json
         echo "global.applicationPath = __dirname" > main.js
+        echo "require('@userdashboard/storage-redis/test-helper.js')" >> main.js
     - name: Test as only storage for Dashboard and modules
       run: |
         ./node_modules/.bin/mocha --file main.js --bail --exit --recursive --timeout 90000000 $(find ./node_modules/@userdashboard/*/ -name "*.test.js" | grep -i -v [a-z]/node_modules | sort -k5.1,8.1 -t /) | tee tests.txt
@@ -52,9 +54,9 @@ jobs:
       working-directory: /tmp/project
       env:
         NODE_ENV: testing
-        STORAGE: "@userdashboard/storage-redis"
-        REDIS_URL: "redis://localhost:6379"
-        NODE_OPTIONS: "--preserve-symlinks"
+        STORAGE: @userdashboard/storage-redis
+        REDIS_URL: redis://localhost:6379
+        NODE_OPTIONS: --preserve-symlinks
     - name: Test as Dashboard storage with module on other type
       run: |
         ./node_modules/.bin/mocha --file main.js --bail --exit --recursive --timeout 90000000 $(find ./node_modules/@userdashboard/*/ -name "*.test.js" | grep -i -v [a-z]/node_modules | sort -k5.1,8.1 -t /) | tee tests.txt
@@ -65,11 +67,11 @@ jobs:
       working-directory: /tmp/project
       env:
         NODE_ENV: testing
-        STORAGE: "@userdashboard/storage-redis"
-        REDIS_URL: "redis://localhost:6379"
-        ORGANIZATIONS_STORAGE: "@userdashboard/storage-mongodb"
-        ORGANIZATIONS_MONGODB_URL: "mongodb://localhost:27017"
-        NODE_OPTIONS: "--preserve-symlinks"
+        STORAGE: @userdashboard/storage-redis
+        REDIS_URL: redis://localhost:6379
+        ORGANIZATIONS_STORAGE: @userdashboard/storage-mongodb
+        ORGANIZATIONS_MONGODB_URL: mongodb://localhost:27017
+        NODE_OPTIONS: --preserve-symlinks
     - name: Test as module storage with Dashboard on other type
       run: |
         ./node_modules/.bin/mocha --file main.js --bail --exit --recursive --timeout 90000000 $(find ./node_modules/@userdashboard/*/ -name "*.test.js" | grep -i -v [a-z]/node_modules | sort -k5.1,8.1 -t /) | tee tests.txt
@@ -80,11 +82,11 @@ jobs:
       working-directory: /tmp/project
       env:
         NODE_ENV: testing
-        STORAGE: "@userdashboard/storage-mongodb"
-        MONGODB_URL: "mongodb://localhost:27017"
-        ORGANIZATIONS_STORAGE: "@userdashboard/storage-redis"
-        ORGANIZATIONS_REDIS_URL: "redis://localhost:6379"
-        NODE_OPTIONS: "--preserve-symlinks"
+        STORAGE: @userdashboard/storage-mongodb
+        MONGODB_URL: mongodb://localhost:27017
+        ORGANIZATIONS_STORAGE: @userdashboard/storage-redis
+        ORGANIZATIONS_REDIS_URL: redis://localhost:6379
+        NODE_OPTIONS: --preserve-symlinks
     - name: Test as Dashboard and module storage using separate servers
       run: |
         ./node_modules/.bin/mocha --file main.js --bail --exit --recursive --timeout 90000000 $(find ./node_modules/@userdashboard/*/ -name "*.test.js" | grep -i -v [a-z]/node_modules | sort -k5.1,8.1 -t /) | tee tests.txt
@@ -95,11 +97,11 @@ jobs:
       working-directory: /tmp/project
       env:
         NODE_ENV: testing
-        STORAGE: "@userdashboard/storage-redis"
+        STORAGE: @userdashboard/storage-redis
         REDIS_URL: "redis://localhost:6379/1"
-        ORGANIZATIONS_STORAGE: "@userdashboard/storage-redis"
+        ORGANIZATIONS_STORAGE: @userdashboard/storage-redis
         ORGANIZATIONS_REDIS_URL: "redis://localhost:6379/2"
-        NODE_OPTIONS: "--preserve-symlinks"
+        NODE_OPTIONS: --preserve-symlinks
     - name: Publish to Github
       uses: stefanzweifel/git-auto-commit-action@v4.1.6
       with:
