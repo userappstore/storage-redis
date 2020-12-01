@@ -119,9 +119,9 @@ jobs:
       env:
         NODE_ENV: testing
         STORAGE: "@userdashboard/storage-redis"
-        REDIS_URL: "redis://localhost:6379/1"
+        REDIS_URL: "redis://localhost:6379/0"
         ORGANIZATIONS_STORAGE: "@userdashboard/storage-redis"
-        ORGANIZATIONS_REDIS_URL: "redis://localhost:6379/2"
+        ORGANIZATIONS_REDIS_URL: "redis://localhost:6379/1"
         NODE_OPTIONS: --preserve-symlinks
     - name: Publish to Github
       uses: stefanzweifel/git-auto-commit-action@v4.1.6
