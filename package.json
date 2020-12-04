@@ -1,11 +1,9 @@
 {
   "dependencies": {
-    "redis": "^3.0.2"
-  },
-  "description": "Use Redis as storage for Dashboard",
-  "devDependencies": {
+    "redis": "^3.0.2",
     "@userdashboard/dashboard": ">=1"
   },
+  "description": "Use Redis as storage for Dashboard",
   "engines": {
     "node": ">=14.0",
     "npm": ">=6.0"
@@ -13,12 +11,6 @@
   "license": "MIT",
   "main": "index.js",
   "name": "@userdashboard/storage-redis",
-  "optionalDependencies": {
-    "@userdashboard/dashboard": ">=1"
-  },
-  "peerDependencies": {
-    "@userdashboard/dashboard": ">=1"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/userdashboard/storage-redis.git"
