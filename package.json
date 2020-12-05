@@ -1,7 +1,6 @@
 {
   "dependencies": {
-    "redis": "^3.0.2",
-    "@userdashboard/dashboard": ">=1"
+    "redis": "^3.0.2"
   },
   "description": "Use Redis as storage for Dashboard",
   "engines": {
