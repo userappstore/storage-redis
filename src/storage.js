@@ -1,5 +1,3 @@
-const fs = require('fs')
-const path = require('path')
 const Redis = require('redis')
 const util = require('util')
 
@@ -12,14 +10,7 @@ module.exports = {
     const redisHost = process.env[`${moduleName}_REDIS_HOST`] || process.env.REDIS_HOST
     const redisPort = process.env[`${moduleName}_REDIS_PORT`] || process.env.REDIS_PORT
     const redisURL = process.env[`${moduleName}_REDIS_URL`] || process.env.REDIS_URL || 'redis://localhost:6379'
-    const dashboardPath1 = path.join(global.applicationPath, 'node_modules/@userdashboard/dashboard/src/log.js')
-    let Log
-    if (fs.existsSync(dashboardPath1)) {
-      Log = require(dashboardPath1)('redis')
-    } else {
-      const dashboardPath2 = path.join(global.applicationPath, 'src/log.js')
-      Log = require(dashboardPath2)('redis')
-    }
+    const Log = require('@userdashboard/dashboard/src/log.js')('redis')
     let client
     if (redisHost && redisPort) {
       client = Redis.createClient(redisPort, redisHost)

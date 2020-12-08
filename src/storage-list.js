@@ -1,17 +1,8 @@
-const fs = require('fs')
-const path = require('path')
 const util = require('util')
 
 module.exports = {
   setup: async (storage) => {
-    const dashboardPath1 = path.join(global.applicationPath, 'node_modules/@userdashboard/dashboard/src/log.js')
-    let Log
-    if (fs.existsSync(dashboardPath1)) {
-      Log = require(dashboardPath1)('redis-list')
-    } else {
-      const dashboardPath2 = path.join(global.applicationPath, 'src/log.js')
-      Log = require(dashboardPath2)('redis-list')
-    }
+    const Log = require('@userdashboard/dashboard/src/log.js')('redis-list')
     const container = {
       add: util.promisify((path, itemid, callback) => {
         return storage.client.hsetnx(`list/map/${path}`, itemid, '1', (error) => {
