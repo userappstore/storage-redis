@@ -21,27 +21,19 @@ module.exports = {
       }),
       addMany: util.promisify((items, callback) => {
         const paths = Object.keys(items)
-        function nextItem () {
-          if (!paths.length) {
-            return callback()
-          }
-          const path = paths.shift()
+        const multi = storage.clientredis.multi()
+        for (const path of paths) {
           const itemid = items[path]
-          return storage.client.hsetnx(`list/map/${path}`, itemid, '1', (error) => {
-            if (error) {
-              Log.error('error adding item', error)
-              return callback(error)
-            }
-            return storage.client.lpush(`list/${path}`, itemid, (error) => {
-              if (error) {
-                Log.error('error adding many items', error)
-                return callback(new Error('unknown-error'))
-              }
-              return nextItem()
-            })
-          })
+          multi.hsetnx(`list/map/${path}`, itemid, '1')
+          multi.lpush(`list/${path}`, itemid)
         }
-        return nextItem()
+        return multi.exec((error) => {
+          if (error) {
+            Log.error('error adding many items', error)
+            return callback(new Error('unknown-error'))
+          }
+          return callback()
+        })
       }),
       count: util.promisify((path, callback) => {
         return storage.client.llen(`list/${path}`, (error, result) => {
