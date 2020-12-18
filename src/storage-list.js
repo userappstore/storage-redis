@@ -21,7 +21,7 @@ module.exports = {
       }),
       addMany: util.promisify((items, callback) => {
         const paths = Object.keys(items)
-        const multi = storage.client,multi()
+        const multi = storage.client.multi()
         for (const path of paths) {
           const itemid = items[path]
           multi.hsetnx(`list/map/${path}`, itemid, '1')
